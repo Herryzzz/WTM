@@ -34,6 +34,39 @@ namespace WalkingTec.Mvvm.Core
 
         #endregion
 
+        #region Domains
+
+        private Dictionary<string,FrameworkDomain> _domains;
+
+        /// <summary>
+        /// ConnectionStrings
+        /// </summary>
+        public Dictionary<string, FrameworkDomain> Domains
+        {
+            get
+            {
+                if (_domains == null)
+                {
+                    _domains = new Dictionary<string, FrameworkDomain>();
+                }
+                return _domains;
+            }
+            set
+            {
+                _domains = value;
+                foreach (var item in _domains)
+                {
+                    if(item.Value != null)
+                    {
+                        item.Value.Name = item.Key;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+
         #region QuickDebug
 
         private bool? _isQuickDebug;
@@ -116,48 +149,6 @@ namespace WalkingTec.Mvvm.Core
             set
             {
                 _uploadDir = value;
-            }
-        }
-
-        #endregion
-
-        #region Enable log
-
-        private bool? _enableLog;
-
-        /// <summary>
-        /// Enable log
-        /// </summary>
-        public bool EnableLog
-        {
-            get
-            {
-                return _enableLog ?? false;
-            }
-            set
-            {
-                _enableLog = value;
-            }
-        }
-
-        #endregion
-
-        #region Log exceptions only
-
-        private bool? _logExceptionOnly;
-
-        /// <summary>
-        /// Log exceptions only
-        /// </summary>
-        public bool LogExceptionOnly
-        {
-            get
-            {
-                return _logExceptionOnly ?? false;
-            }
-            set
-            {
-                _logExceptionOnly = value;
             }
         }
 

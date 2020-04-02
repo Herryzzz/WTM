@@ -14,6 +14,8 @@ using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using WalkingTec.Mvvm.Core.Support.Json;
 
 namespace WalkingTec.Mvvm.Mvc.Filters
 {
@@ -34,7 +36,7 @@ namespace WalkingTec.Mvvm.Mvc.Filters
                 context.HttpContext.Items.Add("actionstarttime", DateTime.Now);
             }
             var ctrlActDesc = context.ActionDescriptor as ControllerActionDescriptor;
-            var log = new ActionLog();// 初始化log备用
+            var log = new SimpleLog();// 初始化log备用
             var ctrlDes = ctrlActDesc.ControllerTypeInfo.GetCustomAttributes(typeof(ActionDescriptionAttribute), false).Cast<ActionDescriptionAttribute>().FirstOrDefault();
             var actDes = ctrlActDesc.MethodInfo.GetCustomAttributes(typeof(ActionDescriptionAttribute), false).Cast<ActionDescriptionAttribute>().FirstOrDefault();
             var postDes = ctrlActDesc.MethodInfo.GetCustomAttributes(typeof(HttpPostAttribute), false).Cast<HttpPostAttribute>().FirstOrDefault();
@@ -44,7 +46,7 @@ namespace WalkingTec.Mvvm.Mvc.Filters
             //给日志的多语言属性赋值
             log.ModuleName = ctrlDes?.GetDescription(ctrl) ?? ctrlActDesc.ControllerName;
             log.ActionName = actDes?.GetDescription(ctrl) ?? ctrlActDesc.ActionName + (postDes == null ? string.Empty : "[P]");
-            log.ActionUrl = context.HttpContext.GetRemoteIpAddress();
+            log.ActionUrl = ctrl.BaseUrl;
             log.IP = context.HttpContext.Connection.RemoteIpAddress.ToString();
 
             ctrl.Log = log;
@@ -241,7 +243,7 @@ namespace WalkingTec.Mvvm.Mvc.Filters
             if (context.Result is PartialViewResult)
             {
                 var model = (context.Result as PartialViewResult).ViewData?.Model as BaseVM;
-                if (model == null && (context.Result as PartialViewResult).ViewData != null)
+                if (model == null && (context.Result as PartialViewResult).Model == null && (context.Result as PartialViewResult).ViewData != null)
                 {
                     model = ctrl.CreateVM<BaseVM>();
                     (context.Result as PartialViewResult).ViewData.Model = model;
@@ -286,12 +288,15 @@ namespace WalkingTec.Mvvm.Mvc.Filters
             if (context.Result is ViewResult)
             {
                 var model = (context.Result as ViewResult).ViewData?.Model as BaseVM;
-                if (model == null && (context.Result as ViewResult).ViewData != null)
+                if (model == null && (context.Result as ViewResult).Model == null && (context.Result as ViewResult).ViewData != null)
                 {
                     model = ctrl.CreateVM<BaseVM>();
                     (context.Result as ViewResult).ViewData.Model = model;
                 }
-                context.HttpContext.Response.Cookies.Append("divid", model?.ViewDivId);
+               if (model != null)
+                {
+                    context.HttpContext.Response.Cookies.Append("divid", model?.ViewDivId);
+                }
             }
             base.OnActionExecuted(context);
         }
@@ -312,10 +317,8 @@ namespace WalkingTec.Mvvm.Mvc.Filters
             {
                 return;
             }
-            if (ctrl.ConfigInfo.EnableLog == true && nolog == false)
+            if ( nolog == false)
             {
-                if (ctrl.ConfigInfo.LogExceptionOnly == false || context.Exception != null)
-                {
                     var log = new ActionLog();
                     var ctrlDes = ctrlActDesc.ControllerTypeInfo.GetCustomAttributes(typeof(ActionDescriptionAttribute), false).Cast<ActionDescriptionAttribute>().FirstOrDefault();
                     var actDes = ctrlActDesc.MethodInfo.GetCustomAttributes(typeof(ActionDescriptionAttribute), false).Cast<ActionDescriptionAttribute>().FirstOrDefault();
@@ -341,14 +344,11 @@ namespace WalkingTec.Mvvm.Mvc.Filters
                     }
                     try
                     {
-                        using (var dc = ctrl.CreateDC(true))
-                        {
-                            dc.Set<ActionLog>().Add(log);
-                            dc.SaveChanges();
-                        }
+                        GlobalServices.GetRequiredService<ILogger<ActionLog>>().Log<ActionLog>(LogLevel.Information, new EventId(), log, null, (a,b)=> {
+                            return a.GetLogString();
+                        });
                     }
                     catch { }
-                }
             }
             if (context.Exception != null)
             {

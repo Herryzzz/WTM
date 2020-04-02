@@ -1,11 +1,57 @@
 # 更新日志
 
+## v3.5.x （2.5.x同步更新）
+
+##3.5.2 以及 2.5.2 (2020-3-29)
+* **修改：**  修复vue代码生成下拉菜单少了一个逗号的bug
+* **修改：**  修复vue发布时的问题
+* **修改：**  修复vue列表高度计算的问题
+* **修改：**  修复vue数据权限列表的删除bug
+
+* **新增：**  Layui. 现在ListVM中的GridAction可以通过SetButtonClass方法设置按钮颜色
+* **新增：**  Layui. UIService中新增MakeButton方法替换之前有问题的MakeRedirectButton方法
+* **修改：**  修复GetGridActions会被调用两次的问题（这其实是.netcore的bug...)
+
+
+##3.5.1 以及 2.5.1 (2020-3-26)
+* **修改：**  修复vue菜单相关的一些bug
+* **修改：**  修复vue代码生成器对于布尔值的控件生成的bug
+* **修改：**  修复vue代码生成器对于下拉菜单生成的bug
+
+##3.5.0 以及 2.5.0 发布，你心心念的Vue来了！！！vue目前还属于预览版，欢迎大家多提宝贵意见
+* **新增：**  现在官网可以生成Vue的项目了
+* **新增：**  VUE项目可以使用和Layui，React相同的代码生成
+* **新增：**  appsettings文件中增加了Domains的配置，用来注册httpclient。在Controller和VM中通过ConfigInfo.Domains["key"].CallAPI来方便高效的调用其他网站的api
+* **修改：**  修复代码生成器会将bool的搜索条件啊生成两次的bug
+* **修改：**  修复继承自TopBasePoco的Model在DoAdd中没有正确的添加子表数据的bug
+* **修改：**  修复用户没有权限时没有正确返回401错误的bug
+
 ## v3.1.x
 
 3.1版本正式发布，支持.netcore 3.1，与2.4.x最新版本在功能上同步更新
 
 
 ## v2.4.x
+
+v2.4.9(2020-3-15)
+* **修改：**  重构日志，使用.netcore默认的日志记录流程和规则。 在.ConfigureLogging中可以使用AddWTMLogger来添加WTM的日志功能，并可以在appsetting文件中配置Logging来指定需要记录日志的级别，就像你操作其他Console，Debug这些日志一样。
+* **修改：**  修复layui下日期控件默认显示当前日期的问题
+* **修改：**  修复form和其中的searchpanel同时指定label-width会报错的问题
+* **修改：**  代码生成现在会默认为DateTime类型的搜索条件生成时间区间的搜索
+* **修改：**  修复了jwt认证失败没有正确返回401的问题
+
+v2.4.7(2020-3-9)
+
+* **新增：**  现在Layui模式下列表可以列筛选和打印
+* **新增：**  现在ListVM中的Action按钮可以通过SetPromptMessage设置询问对话框
+* **新增：**  现在数据权限可以识别多对多和树形结构
+
+* **修改：**  修改了新生成的项目LoginVM和RegVM错位的问题
+* **修改：**  修复了设置不分页不起作用的bug
+* **修改：**  修改了view强制要求model继承BaseVM的bug
+* **修改：**  修复了Combobox在disable状态下的显示问题
+* **修改：**  修复了代码生成器在多个DataContext时候的生成问题
+* **修改：**  修复了SearchPanel中Combobox多选时提交数据错误的问题
 
 v2.4.6(2020-2-22)
 本次更新加入了在连接字符串上指定数据库类型和DataContext的功能，并修复了近一阶段的bug。
