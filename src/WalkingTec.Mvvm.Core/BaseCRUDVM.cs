@@ -279,7 +279,7 @@ namespace WalkingTec.Mvvm.Core
                     //获取xxx的类型
                     var ftype = pro.PropertyType.GenericTypeArguments.First();
                     //如果xxx继承自TopBasePoco
-                    if (ftype.IsSubclassOf(typeof(BasePoco)))
+                    if (ftype.IsSubclassOf(typeof(TopBasePoco)))
                     {
                         //界面传过来的子表数据
                         IEnumerable<TopBasePoco> list = pro.GetValue(Entity) as IEnumerable<BasePoco>;
@@ -637,7 +637,9 @@ namespace WalkingTec.Mvvm.Core
                 (Entity as PersistPoco).IsValid = false;
                 (Entity as PersistPoco).UpdateTime = DateTime.Now;
                 (Entity as PersistPoco).UpdateBy = LoginUserInfo?.ITCode;
-                DC.UpdateEntity(Entity);
+                DC.UpdateProperty(Entity, "IsValid");
+                DC.UpdateProperty(Entity, "UpdateTime");
+                DC.UpdateProperty(Entity, "UpdateBy");
                 try
                 {
                     DC.SaveChanges();
@@ -662,7 +664,9 @@ namespace WalkingTec.Mvvm.Core
                 (Entity as PersistPoco).IsValid = false;
                 (Entity as PersistPoco).UpdateTime = DateTime.Now;
                 (Entity as PersistPoco).UpdateBy = LoginUserInfo?.ITCode;
-                DC.UpdateEntity(Entity);
+                DC.UpdateProperty(Entity, "IsValid");
+                DC.UpdateProperty(Entity, "UpdateTime");
+                DC.UpdateProperty(Entity, "UpdateBy");
                 try
                 {
                     await DC.SaveChangesAsync();

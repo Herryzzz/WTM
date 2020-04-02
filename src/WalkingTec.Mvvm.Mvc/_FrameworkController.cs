@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using WalkingTec.Mvvm.Core;
@@ -237,8 +237,6 @@ namespace WalkingTec.Mvvm.Mvc
         public IActionResult Error()
         {
             var ex = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            if (ConfigInfo.EnableLog == true)
-            {
                 ActionLog log = new ActionLog();
                 log.LogType = ActionLogTypesEnum.Exception;
                 log.ActionTime = DateTime.Now;
@@ -266,12 +264,10 @@ namespace WalkingTec.Mvvm.Mvc
                 {
                     log.Duration = DateTime.Now.Subtract(starttime.Value).TotalSeconds;
                 }
-                using (var dc = CreateDC(true))
-                {
-                    dc.Set<ActionLog>().Add(log);
-                    dc.SaveChanges();
-                }
-            }
+                GlobalServices.GetRequiredService<ILogger<ActionLog>>().Log<ActionLog>( LogLevel.Error, new EventId(), log, null, (a, b) => {
+                    return a.GetLogString();
+                });
+            
             var rv = string.Empty;
             if (ConfigInfo.IsQuickDebug == true)
             {
@@ -444,7 +440,7 @@ namespace WalkingTec.Mvvm.Mvc
         }
 
         [ActionDescription("ViewFile")]
-        public IActionResult ViewFile(Guid id, string _DONOT_USE_CS = "default")
+        public IActionResult ViewFile(Guid id, string width, string _DONOT_USE_CS = "default")
         {
             CurrentCS = _DONOT_USE_CS ?? "default";
             string html = string.Empty;
@@ -465,7 +461,7 @@ namespace WalkingTec.Mvvm.Mvc
             }
             else
             {
-                html = $@"<img id='FileObject'  border=0 src='/_Framework/GetFile?id={id}&stream=true&_DONOT_USE_CS={_DONOT_USE_CS}'/>";
+                html = $@"<img id='FileObject' style='{(string.IsNullOrEmpty(width)?"":$"width:{width}px")}'  border=0 src='/_Framework/GetFile?id={id}&stream=true&_DONOT_USE_CS={_DONOT_USE_CS}'/>";
             }
             return Content(html);
 
@@ -682,7 +678,7 @@ namespace WalkingTec.Mvvm.Mvc
         public ActionResult GetGithubInfo()
         {
             var rv = ReadFromCache<string>("githubinfo", () =>
-            {
+            {               
                 var s = APIHelper.CallAPI<github>("https://api.github.com/repos/dotnetcore/wtm").Result;
                 return JsonConvert.SerializeObject(s);
             }, 1800);
