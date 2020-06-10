@@ -15,8 +15,8 @@ namespace WalkingTec.Mvvm.Admin.Api
     [AuthorizeJwtWithCookie]
     [ActionDescription("MenuMangement")]
     [ApiController]
-    [Route("api/[controller]")]
-    public class _FrameworkMenuController : BaseApiController
+    [Route("api/_[controller]")]
+    public class FrameworkMenuController : BaseApiController
     {
         [ActionDescription("Search")]
         [HttpPost("[action]")]
@@ -110,8 +110,7 @@ namespace WalkingTec.Mvvm.Admin.Api
             var vm = CreateVM<FrameworkMenuListVM2>();
             vm.Searcher = searcher;
             vm.SearcherMode = ListVMSearchModeEnum.Export;
-            var data = vm.GenerateExcel();
-            return File(data, "application/vnd.ms-excel", $"Export_ActionLog_{DateTime.Now.ToString("yyyy-MM-dd")}.xls");
+            return vm.GetExportData();
         }
 
         [ActionDescription("ExportByIds")]
@@ -124,8 +123,7 @@ namespace WalkingTec.Mvvm.Admin.Api
                 vm.Ids = new List<string>(ids);
                 vm.SearcherMode = ListVMSearchModeEnum.CheckExport;
             }
-            var data = vm.GenerateExcel();
-            return File(data, "application/vnd.ms-excel", $"Export_ActionLog_{DateTime.Now.ToString("yyyy-MM-dd")}.xls");
+            return vm.GetExportData();
         }
 
         #region 未设置页面
@@ -173,8 +171,24 @@ namespace WalkingTec.Mvvm.Admin.Api
         [HttpGet("GetFolders")]
         public ActionResult GetFolders()
         {
-            var m = DC.Set<FrameworkMenu>().Where(x => x.FolderOnly == true).OrderBy(x => x.DisplayOrder).GetSelectListItems(LoginUserInfo.DataPrivileges, null, x => x.PageName);
-            return Ok(m);
+            var AllParents = DC.Set<FrameworkMenu>().Where(x => x.FolderOnly == true).OrderBy(x => x.DisplayOrder).GetSelectListItems(LoginUserInfo.DataPrivileges, null, x => x.PageName);
+            foreach (var p in AllParents)
+            {
+                if (p.Text.StartsWith("MenuKey."))
+                {
+                    if (Core.Program._Callerlocalizer[p.Text].ResourceNotFound == true)
+                    {
+                        p.Text = Core.Program._localizer[p.Text];
+                    }
+                    else
+                    {
+                        p.Text = Core.Program._Callerlocalizer[p.Text];
+                    }
+
+                }
+            }
+
+            return Ok(AllParents);
         }
 
     }

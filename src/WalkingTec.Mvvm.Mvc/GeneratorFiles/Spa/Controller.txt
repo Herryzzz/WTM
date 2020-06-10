@@ -20,11 +20,18 @@ namespace $namespace$
     {
         [ActionDescription("Search")]
         [HttpPost("Search")]
-		public string Search($controllername$Searcher searcher)
+		public IActionResult Search($controllername$Searcher searcher)
         {
-            var vm = CreateVM<$controllername$ListVM>();
-            vm.Searcher = searcher;
-            return vm.GetJson();
+            if (ModelState.IsValid)
+            {
+                var vm = CreateVM<$controllername$ListVM>();
+                vm.Searcher = searcher;
+                return Content(vm.GetJson());
+            }
+            else
+            {
+                return BadRequest(ModelState.GetErrorJson());
+            }
         }
 
         [ActionDescription("Get")]
@@ -111,8 +118,7 @@ namespace $namespace$
             var vm = CreateVM<$controllername$ListVM>();
             vm.Searcher = searcher;
             vm.SearcherMode = ListVMSearchModeEnum.Export;
-            var data = vm.GenerateExcel();
-            return File(data, "application/vnd.ms-excel", $"Export_$modelname$_{DateTime.Now.ToString("yyyy-MM-dd")}.xls");
+            return vm.GetExportData();
         }
 
         [ActionDescription("CheckExport")]
@@ -125,8 +131,7 @@ namespace $namespace$
                 vm.Ids = new List<string>(ids);
                 vm.SearcherMode = ListVMSearchModeEnum.CheckExport;
             }
-            var data = vm.GenerateExcel();
-            return File(data, "application/vnd.ms-excel", $"Export_$modelname$_{DateTime.Now.ToString("yyyy-MM-dd")}.xls");
+            return vm.GetExportData();
         }
 
         [ActionDescription("DownloadTemplate")]

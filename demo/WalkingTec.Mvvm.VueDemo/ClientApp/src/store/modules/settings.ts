@@ -7,6 +7,7 @@ import {
 } from "vuex-module-decorators";
 import store from "@/store/modules/index";
 import { style as variables } from "@/config/index";
+import { setSettings, getSettings } from "@/util/cookie";
 import defaultSettings from "@/settings";
 
 export interface ISettingsState {
@@ -23,6 +24,7 @@ export interface ISettingsState {
 
 @Module({ dynamic: true, store, name: "settings" })
 class Settings extends VuexModule implements ISettingsState {
+
   public title = defaultSettings.title;
   public theme = variables.theme;
   public fixedHeader = defaultSettings.fixedHeader;
@@ -38,6 +40,9 @@ class Settings extends VuexModule implements ISettingsState {
     const { key, value } = payload;
     if (Object.prototype.hasOwnProperty.call(this, key)) {
       (this as any)[key] = value;
+      const obj = getSettings();
+      console.log('{...obj, [key]: value}', {...obj, [key]: value});
+      setSettings({...obj, [key]: value});
     }
   }
 

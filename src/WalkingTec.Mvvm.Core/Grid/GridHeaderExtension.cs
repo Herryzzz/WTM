@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -42,7 +42,7 @@ namespace WalkingTec.Mvvm.Core
             var alignType = GridColumnAlignEnum.Center;
             if (me != null)
             {
-                var propType = (me.Member as PropertyInfo).PropertyType;
+                var propType = me.Type;
                 if (propType == typeof(string))
                 {
                     alignType = GridColumnAlignEnum.Left;
@@ -83,7 +83,7 @@ namespace WalkingTec.Mvvm.Core
         }
 
         public static GridColumn<T> MakeGridHeaderAction<T, V>(this IBasePagedListVM<T, V> self
-            , string title = "操作"
+            , string title = null
             , int? width = 160
             , int? rowspan = null
         )
@@ -95,7 +95,7 @@ namespace WalkingTec.Mvvm.Core
                 ColumnType = GridColumnTypeEnum.Action,
                 Width = width,
                 Fixed = GridColumnFixedEnum.Right,
-                Title = title
+                Title = title??Program._localizer["Operation"]
             };
         }
 

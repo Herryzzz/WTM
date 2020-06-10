@@ -42,6 +42,9 @@ namespace WalkingTec.Mvvm.TagHelpers.LayUI
         public string Click { get; set; }
 
         public bool Disabled { get; set; }
+
+        public string ConfirmTxt { get; set; }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             if (string.IsNullOrEmpty(Id))
@@ -104,26 +107,20 @@ namespace WalkingTec.Mvvm.TagHelpers.LayUI
             string onclick = null;
             if (string.IsNullOrEmpty(Click) == false && Disabled == false)
             {
-                if (this is SubmitButtonTagHelper)
+                if (!string.IsNullOrEmpty(ConfirmTxt))
                 {
-                    onclick = Click+";return true;";
+                    Click = $"layer.confirm('{ConfirmTxt}', {{icon: 3, title:'{Program._localizer["Info"]}'}}, function(index){{ {Click};layer.close(index); }})";
                 }
-                else
-                {
-                    onclick = Click + ";return false;";
-                }
+                //if (this is SubmitButtonTagHelper)
+                //{
+                //    onclick = Click+";return true;";
+                //}
+                //else
+                //{
+                onclick = Click + ";return false;";
+                //}
             }
-            if (string.IsNullOrEmpty(Click) == true && Disabled == false)
-            {
-                if (this is SubmitButtonTagHelper)
-                {
-                    onclick = "return true;";
-                }
-                else
-                {
-                    onclick = "return false;";
-                }
-            }
+
             output.PostElement.AppendHtml($@"
 <script>
   $('#{Id}').on('click',function(){{

@@ -15,8 +15,8 @@ namespace WalkingTec.Mvvm.Admin.Api
     [AuthorizeJwtWithCookie]
     [ActionDescription("GroupManagement")]
     [ApiController]
-    [Route("api/[controller]")]
-    public class _FrameworkGroupController : BaseApiController
+    [Route("api/_[controller]")]
+    public class FrameworkGroupController : BaseApiController
     {
         [ActionDescription("Search")]
         [HttpPost("[action]")]
@@ -117,8 +117,7 @@ namespace WalkingTec.Mvvm.Admin.Api
             var vm = CreateVM<FrameworkGroupListVM>();
             vm.Searcher = searcher;
             vm.SearcherMode = ListVMSearchModeEnum.Export;
-            var data = vm.GenerateExcel();
-            return File(data, "application/vnd.ms-excel", $"Export_FrameworkGroup_{DateTime.Now.ToString("yyyy-MM-dd")}.xls");
+            return vm.GetExportData();
         }
 
         [ActionDescription("ExportByIds")]
@@ -131,8 +130,7 @@ namespace WalkingTec.Mvvm.Admin.Api
                 vm.Ids = new List<string>(ids);
                 vm.SearcherMode = ListVMSearchModeEnum.CheckExport;
             }
-            var data = vm.GenerateExcel();
-            return File(data, "application/vnd.ms-excel", $"Export_FrameworkGroup_{DateTime.Now.ToString("yyyy-MM-dd")}.xls");
+            return vm.GetExportData();
         }
 
         [ActionDescription("DownloadTemplate")]
