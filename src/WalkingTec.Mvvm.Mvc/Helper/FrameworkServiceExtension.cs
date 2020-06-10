@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Loader;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -181,10 +182,13 @@ namespace WalkingTec.Mvvm.Mvc
                 options.ModelBinderProviders.Insert(0, new StringBinderProvider());
 
                 // Filters
-                options.Filters.Add(new AuthorizeFilter());
+                //options.Filters.Add(new AuthorizeFilter());
                 options.Filters.Add(new DataContextFilter(CsSector));
                 options.Filters.Add(new PrivilegeFilter());
                 options.Filters.Add(new FrameworkFilter());
+
+                options.ModelBindingMessageProvider.SetValueIsInvalidAccessor((x) => Core.Program._localizer["ValueIsInvalidAccessor",x]);
+                options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((x,y) => Core.Program._localizer["AttemptedValueIsInvalidAccessor",x,y]);
             })
             .AddJsonOptions(options =>
             {
@@ -324,7 +328,8 @@ namespace WalkingTec.Mvvm.Mvc
                             ValidateIssuerSigningKey = true,
                             IssuerSigningKey = jwtOptions.SymmetricSecurityKey,
 
-                            ValidateLifetime = true
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.FromSeconds(1)
                         };
                     });
             #endregion
@@ -338,6 +343,9 @@ namespace WalkingTec.Mvvm.Mvc
                         x.BaseAddress = new Uri(item.Value.Url);
                         x.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
                         x.DefaultRequestHeaders.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
+                    }).ConfigurePrimaryHttpMessageHandler(() =>
+                    {
+                        return new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip, UseProxy = false, UseCookies = false };
                     });
                 }
             }
@@ -561,9 +569,9 @@ namespace WalkingTec.Mvvm.Mvc
                         {
                             ID = Guid.NewGuid(),
                             ParentId = modelmenu.ID,
-                            PageName = page.Module.ActionDes.Description,
+                            PageName = page.Module.ActionDes == null ? page.Module.ModuleName : page.Module.ActionDes.Description,
                             Url = url
-                        });
+                        }) ;
                     }
                 }
             }

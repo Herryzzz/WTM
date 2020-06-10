@@ -168,6 +168,9 @@
   <data name="Attachment" xml:space="preserve">
     <value>附件</value>
   </data>
+  <data name="AttemptedValueIsInvalidAccessor" xml:space="preserve">
+    <value>'{0}' 不是 {1} 的有效格式</value>
+  </data>
   <data name="BasicInfo" xml:space="preserve">
     <value>基本信息</value>
   </data>
@@ -546,6 +549,30 @@
   <data name="MenuItem" xml:space="preserve">
     <value>菜单项</value>
   </data>
+  <data name="MenuKey.Api" xml:space="preserve">
+    <value>内置Api</value>
+  </data>
+  <data name="MenuKey.DataPrivilege" xml:space="preserve">
+    <value>数据权限</value>
+  </data>
+  <data name="MenuKey.GroupManagement" xml:space="preserve">
+    <value>用户组管理</value>
+  </data>
+  <data name="MenuKey.Log" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="MenuKey.MenuMangement" xml:space="preserve">
+    <value>菜单管理</value>
+  </data>
+  <data name="MenuKey.RoleManagement" xml:space="preserve">
+    <value>角色管理</value>
+  </data>
+  <data name="MenuKey.SystemManagement" xml:space="preserve">
+    <value>系统管理</value>
+  </data>
+  <data name="MenuKey.UserManagement" xml:space="preserve">
+    <value>用户管理</value>
+  </data>
   <data name="MenuMangement" xml:space="preserve">
     <value>菜单管理</value>
   </data>
@@ -566,6 +593,9 @@
   </data>
   <data name="Name" xml:space="preserve">
     <value>姓名</value>
+  </data>
+  <data name="NeedLogin" xml:space="preserve">
+    <value>您没有登录或登录已过期，请重新登陆</value>
   </data>
   <data name="NewPassword" xml:space="preserve">
     <value>新密码</value>
@@ -833,6 +863,9 @@
   </data>
   <data name="Valid" xml:space="preserve">
     <value>有效</value>
+  </data>
+  <data name="ValueIsInvalidAccessor" xml:space="preserve">
+    <value>{0} 格式错误</value>
   </data>
   <data name="ViewFile" xml:space="preserve">
     <value>查看文件</value>
